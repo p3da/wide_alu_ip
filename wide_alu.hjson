@@ -2,9 +2,12 @@
     name: "wide_alu",
     clock_primary: "clk_i",
     reset_primary: "rst_ni",
-    bus_device: "reg",
-    bus_host: "",
-
+    bus_interfaces: [
+      {
+        protocol: "reg_iface",
+        direction: "device"
+      }
+    ],
     regwidth: "32",
     registers: [
         { multireg:
@@ -51,6 +54,7 @@
           swaccess: "wo",
           hwaccess: "hro",
           hwext: "true",
+          hwqe: "true",
           fields: [
               { bits: "0", name: "TRIGGER",
                 desc: "Trigger operation on rising edge."
@@ -65,6 +69,7 @@
           swaccess: "rw",
           hwaccess: "hrw",
           hwext: "true",
+          hwqe: "true",
           fields: [
               { bits: "2:0", name: "OPSEL",
                 desc: "Select the operation to perform.",

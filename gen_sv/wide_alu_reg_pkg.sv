@@ -6,14 +6,13 @@
 
 package wide_alu_reg_pkg;
 
-  // Param list
-  parameter int OP_A = 8;
-  parameter int OP_B = 8;
-  parameter int RESULT = 16;
+  // Address widths within the block
+  parameter int BlockAw = 8;
 
   ////////////////////////////
   // Typedefs for registers //
   ////////////////////////////
+
   typedef struct packed {
     logic [31:0] q;
   } wide_alu_reg2hw_op_a_mreg_t;
@@ -44,7 +43,6 @@ package wide_alu_reg_pkg;
     } delay;
   } wide_alu_reg2hw_ctrl2_reg_t;
 
-
   typedef struct packed {
     logic [31:0] d;
   } wide_alu_hw2reg_result_mreg_t;
@@ -62,65 +60,80 @@ package wide_alu_reg_pkg;
     logic [1:0]  d;
   } wide_alu_hw2reg_status_reg_t;
 
-
-  ///////////////////////////////////////
-  // Register to internal design logic //
-  ///////////////////////////////////////
+  // Register -> HW type
   typedef struct packed {
-    wide_alu_reg2hw_op_a_mreg_t [7:0] op_a; // [529:274]
-    wide_alu_reg2hw_op_b_mreg_t [7:0] op_b; // [273:18]
-    wide_alu_reg2hw_ctrl1_reg_t ctrl1; // [17:14]
-    wide_alu_reg2hw_ctrl2_reg_t ctrl2; // [13:1]
+    wide_alu_reg2hw_op_a_mreg_t [7:0] op_a; // [528:273]
+    wide_alu_reg2hw_op_b_mreg_t [7:0] op_b; // [272:17]
+    wide_alu_reg2hw_ctrl1_reg_t ctrl1; // [16:13]
+    wide_alu_reg2hw_ctrl2_reg_t ctrl2; // [12:0]
   } wide_alu_reg2hw_t;
 
-  ///////////////////////////////////////
-  // Internal design logic to register //
-  ///////////////////////////////////////
+  // HW -> register type
   typedef struct packed {
-    wide_alu_hw2reg_result_mreg_t [15:0] result; // [525:14]
-    wide_alu_hw2reg_ctrl2_reg_t ctrl2; // [13:1]
-    wide_alu_hw2reg_status_reg_t status; // [0:1]
+    wide_alu_hw2reg_result_mreg_t [15:0] result; // [524:13]
+    wide_alu_hw2reg_ctrl2_reg_t ctrl2; // [12:2]
+    wide_alu_hw2reg_status_reg_t status; // [1:0]
   } wide_alu_hw2reg_t;
 
-  // Register Address
-  parameter logic [7:0] WIDE_ALU_OP_A_0_OFFSET = 8'h 0;
-  parameter logic [7:0] WIDE_ALU_OP_A_1_OFFSET = 8'h 4;
-  parameter logic [7:0] WIDE_ALU_OP_A_2_OFFSET = 8'h 8;
-  parameter logic [7:0] WIDE_ALU_OP_A_3_OFFSET = 8'h c;
-  parameter logic [7:0] WIDE_ALU_OP_A_4_OFFSET = 8'h 10;
-  parameter logic [7:0] WIDE_ALU_OP_A_5_OFFSET = 8'h 14;
-  parameter logic [7:0] WIDE_ALU_OP_A_6_OFFSET = 8'h 18;
-  parameter logic [7:0] WIDE_ALU_OP_A_7_OFFSET = 8'h 1c;
-  parameter logic [7:0] WIDE_ALU_OP_B_0_OFFSET = 8'h 20;
-  parameter logic [7:0] WIDE_ALU_OP_B_1_OFFSET = 8'h 24;
-  parameter logic [7:0] WIDE_ALU_OP_B_2_OFFSET = 8'h 28;
-  parameter logic [7:0] WIDE_ALU_OP_B_3_OFFSET = 8'h 2c;
-  parameter logic [7:0] WIDE_ALU_OP_B_4_OFFSET = 8'h 30;
-  parameter logic [7:0] WIDE_ALU_OP_B_5_OFFSET = 8'h 34;
-  parameter logic [7:0] WIDE_ALU_OP_B_6_OFFSET = 8'h 38;
-  parameter logic [7:0] WIDE_ALU_OP_B_7_OFFSET = 8'h 3c;
-  parameter logic [7:0] WIDE_ALU_RESULT_0_OFFSET = 8'h 40;
-  parameter logic [7:0] WIDE_ALU_RESULT_1_OFFSET = 8'h 44;
-  parameter logic [7:0] WIDE_ALU_RESULT_2_OFFSET = 8'h 48;
-  parameter logic [7:0] WIDE_ALU_RESULT_3_OFFSET = 8'h 4c;
-  parameter logic [7:0] WIDE_ALU_RESULT_4_OFFSET = 8'h 50;
-  parameter logic [7:0] WIDE_ALU_RESULT_5_OFFSET = 8'h 54;
-  parameter logic [7:0] WIDE_ALU_RESULT_6_OFFSET = 8'h 58;
-  parameter logic [7:0] WIDE_ALU_RESULT_7_OFFSET = 8'h 5c;
-  parameter logic [7:0] WIDE_ALU_RESULT_8_OFFSET = 8'h 60;
-  parameter logic [7:0] WIDE_ALU_RESULT_9_OFFSET = 8'h 64;
-  parameter logic [7:0] WIDE_ALU_RESULT_10_OFFSET = 8'h 68;
-  parameter logic [7:0] WIDE_ALU_RESULT_11_OFFSET = 8'h 6c;
-  parameter logic [7:0] WIDE_ALU_RESULT_12_OFFSET = 8'h 70;
-  parameter logic [7:0] WIDE_ALU_RESULT_13_OFFSET = 8'h 74;
-  parameter logic [7:0] WIDE_ALU_RESULT_14_OFFSET = 8'h 78;
-  parameter logic [7:0] WIDE_ALU_RESULT_15_OFFSET = 8'h 7c;
-  parameter logic [7:0] WIDE_ALU_CTRL1_OFFSET = 8'h 80;
-  parameter logic [7:0] WIDE_ALU_CTRL2_OFFSET = 8'h 84;
-  parameter logic [7:0] WIDE_ALU_STATUS_OFFSET = 8'h 88;
+  // Register offsets
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_0_OFFSET = 8'h 0;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_1_OFFSET = 8'h 4;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_2_OFFSET = 8'h 8;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_3_OFFSET = 8'h c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_4_OFFSET = 8'h 10;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_5_OFFSET = 8'h 14;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_6_OFFSET = 8'h 18;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_A_7_OFFSET = 8'h 1c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_0_OFFSET = 8'h 20;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_1_OFFSET = 8'h 24;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_2_OFFSET = 8'h 28;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_3_OFFSET = 8'h 2c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_4_OFFSET = 8'h 30;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_5_OFFSET = 8'h 34;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_6_OFFSET = 8'h 38;
+  parameter logic [BlockAw-1:0] WIDE_ALU_OP_B_7_OFFSET = 8'h 3c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_0_OFFSET = 8'h 40;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_1_OFFSET = 8'h 44;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_2_OFFSET = 8'h 48;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_3_OFFSET = 8'h 4c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_4_OFFSET = 8'h 50;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_5_OFFSET = 8'h 54;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_6_OFFSET = 8'h 58;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_7_OFFSET = 8'h 5c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_8_OFFSET = 8'h 60;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_9_OFFSET = 8'h 64;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_10_OFFSET = 8'h 68;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_11_OFFSET = 8'h 6c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_12_OFFSET = 8'h 70;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_13_OFFSET = 8'h 74;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_14_OFFSET = 8'h 78;
+  parameter logic [BlockAw-1:0] WIDE_ALU_RESULT_15_OFFSET = 8'h 7c;
+  parameter logic [BlockAw-1:0] WIDE_ALU_CTRL1_OFFSET = 8'h 80;
+  parameter logic [BlockAw-1:0] WIDE_ALU_CTRL2_OFFSET = 8'h 84;
+  parameter logic [BlockAw-1:0] WIDE_ALU_STATUS_OFFSET = 8'h 88;
 
+  // Reset values for hwext registers and their fields
+  parameter logic [31:0] WIDE_ALU_RESULT_0_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_1_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_2_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_3_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_4_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_5_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_6_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_7_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_8_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_9_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_10_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_11_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_12_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_13_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_14_RESVAL = 32'h 0;
+  parameter logic [31:0] WIDE_ALU_RESULT_15_RESVAL = 32'h 0;
+  parameter logic [1:0] WIDE_ALU_CTRL1_RESVAL = 2'h 0;
+  parameter logic [23:0] WIDE_ALU_CTRL2_RESVAL = 24'h 0;
+  parameter logic [1:0] WIDE_ALU_STATUS_RESVAL = 2'h 0;
 
-  // Register Index
+  // Register index
   typedef enum int {
     WIDE_ALU_OP_A_0,
     WIDE_ALU_OP_A_1,
@@ -197,5 +210,6 @@ package wide_alu_reg_pkg;
     4'b 0111, // index[33] WIDE_ALU_CTRL2
     4'b 0001  // index[34] WIDE_ALU_STATUS
   };
+
 endpackage
 
