@@ -89,16 +89,11 @@ module wide_alu
                     state_d               = wide_alu_pkg::IDLE;
                     delay_cntr_d          = 0;
                     case (op_sel_q)
-                        wide_alu_pkg::ADD:
-                            result_d = op_a_i + op_b_i;
-                        wide_alu_pkg::SUB:
-                            result_d = op_a_i - op_b_i;
-                        wide_alu_pkg::MUL:
-                            result_d = op_a_i * op_b_i;
-                        wide_alu_pkg::XOR:
-                            result_d = op_a_i ^ op_b_i;
-                        wide_alu_pkg::AND:
-                            result_d = op_a_i & op_b_i;
+                        wide_alu_pkg::ADD,
+                        wide_alu_pkg::SUB,
+                        wide_alu_pkg::MUL,
+                        wide_alu_pkg::XOR,
+                        wide_alu_pkg::AND,
                         wide_alu_pkg::OR:
                             result_d = op_a_i | op_b_i;
                         default: begin
@@ -106,6 +101,25 @@ module wide_alu
                             delay_cntr_d          = delay_cntr_q;
                         end
                     endcase
+		    // disable all operations besides OR to optimize synthesis
+                    // case (op_sel_q)
+                    //     wide_alu_pkg::ADD:
+                    //         result_d = op_a_i + op_b_i;
+                    //     wide_alu_pkg::SUB:
+                    //         result_d = op_a_i - op_b_i;
+                    //     wide_alu_pkg::MUL:
+                    //         result_d = op_a_i * op_b_i;
+                    //     wide_alu_pkg::XOR:
+                    //         result_d = op_a_i ^ op_b_i;
+                    //     wide_alu_pkg::AND:
+                    //         result_d = op_a_i & op_b_i;
+                    //     wide_alu_pkg::OR:
+                    //         result_d = op_a_i | op_b_i;
+                    //     default: begin
+                    //         state_d = wide_alu_pkg::ERROR_OPCODE;
+                    //         delay_cntr_d          = delay_cntr_q;
+                    //     end
+                    // endcase
                 end else begin // if (delay_cntr_q == deaccel_factor_q)
                     state_d               = wide_alu_pkg::PENDING;
                     delay_cntr_d          = delay_cntr_q+1;
